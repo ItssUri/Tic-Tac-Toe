@@ -1,0 +1,100 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  margin: auto;
+  max-width: 38rem;
+  padding: 2rem;
+  max-height: 100%;
+  background-color: cornflowerblue;
+}
+
+@font-face {
+  font-family: 'Cabin';
+  src: url('fonts/static/Cabin-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+ font-family: "Cabin";
+}
+
+.title {
+  font-family: "Cabin", serif;
+  text-align: center;
+  color: white;
+  font-size: xx-large;
+}
+
+button {
+  background-color: #fff; /* Blanco */
+  color: #333;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin: auto;
+}
+
+button:hover {
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(1, 243, 243, 1);
+}
+
+.button_container {
+  text-align: center;
+}
+
+table {
+  margin: 5px auto;
+  width: 15rem; 
+  height: 100%; 
+  border-spacing: 3px;
+  text-align: center;
+}
+
+table tr:last-child td:first-child {
+  border-bottom-left-radius: 10px;
+}
+  
+table tr:last-child td:last-child {
+  border-bottom-right-radius: 10px;
+}
+
+table tr:first-child td:first-child {
+  border-top-left-radius: 10px;
+}
+  
+table tr:first-child td:last-child {
+  border-top-right-radius: 10px;
+}
+
+#result {
+  width: 100%;  
+  text-align: center;
+  height: 100%;
+}
+
+td {
+  color: white;
+  box-shadow: #333;
+  background-color: #ffffff5d;
+  
+  height: 5rem;
+}
+td:hover { 
+  background-color: #ffffff3b;
+}
+
+.x {
+  font-weight: bold;
+  color: red;
+}
+
+.o {
+  font-weight: bold;
+  color: blue;
+}
