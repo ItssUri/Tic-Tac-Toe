@@ -2,35 +2,117 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>TIC TAC TOE</title>
+    
     <link rel="icon" href="./.output/favicon.ico" type="image/x-icon"/>
     <script>
+      currentTurn = 0
       document.addEventListener("DOMContentLoaded", () => {
+        const resultElement = document.getElementById("result");
+    
+        // Fetch initial data and render the table
         document.getElementById("fetch").addEventListener("click", async () => {
           console.log("Button clicked");
           const result = await window.api.fetchMovie();
           console.log("Movies:", result);
+          currentTurn = result[0]['turn'];
+          document.getElementById("subtitle").innerText = "Turn: "+ currentTurn
+          if (parseInt(result[0]['turn']) % 2 == 0) {
+                document.getElementById("subtitle").innerText += " | Your Turn !"
+            }
+          renderTable(result);
+            
+          // Hide the button after the initial fetch
+          document.getElementById("subtitle").style.display = "block"
+          
+          
+          
+          document.getElementById("fetch").style.display = "none";
+          document.getElementById("new-game").style.display = "none"
+          await window.api.watchMovie();
+        });
 
-          const resultElement = document.getElementById("result");
-
-          if (result.error) {
-            resultElement.textContent = `Error: ${result.error}`;
-          } else {
-            // Create a table to display the data
-            const table = document.createElement("table");
-
-            // Create rows dynamically from the data
-            for (let row = 0; row < 3; row++) {
+        document.getElementById("new-game").addEventListener("click",async () => {
+          document.getElementById("new-game").style.display = "none"
+          document.getElementById("result").style.display = "block"
+          await window.api.cleanTable();
+        })
+    
+        // Listen for real-time changes
+        window.api.onMovieChange((change) => {
+          console.log("Received change from watch:", change);
+    
+          // Apply the change to the table
+          if (change.operationType === "insert" || change.operationType === "update") {
+            const newDocument = change.fullDocument;
+            console.log("New or updated document:", newDocument);
+            if (newDocument.hasOwnProperty("turn")) {
+              currentTurn = newDocument['turn']
+              document.getElementById("subtitle").innerText ="Turn: "+ currentTurn
+              if (parseInt(currentTurn) % 2 == 0) {
+                document.getElementById("subtitle").innerText += " | Your Turn !"
+              }
+            }
+            if (currentTurn>9) {
+            document.getElementById("new-game").style.display = "block"
+            } else {
+              document.getElementById("new-game").style.display = "none"
+            }
+            if (currentTurn==1) {
+              document.getElementById("gameResult").style.display = "none"
+            }
+            if (newDocument.hasOwnProperty("winner")) {
+              winningState = newDocument['winner']
+              switch (winningState.toLowerCase()) {
+                case "x":
+                  document.getElementById("gameResult").style.display= "block"
+                  document.getElementById("gameResult").innerHTML = "Player X Wins!"
+                  document.getElementById("new-game").style.display = "block"
+                  break;
+                case "o":
+                  
+                  document.getElementById("gameResult").style.display= "block"
+                  document.getElementById("gameResult").innerHTML = "Player O Wins!"
+                  document.getElementById("new-game").style.display = "block"
+                  break;
+                case "draw":
+                  document.getElementById("result").style.display = "none"
+                  document.getElementById("gameResult").style.display= "block"
+                  document.getElementById("gameResult").innerHTML = "Draw!"
+                  document.getElementById("new-game").style.display = "block"
+                  break;
+                default:
+                  break;
+              }
+            }
+            updateCell(newDocument.row, newDocument.column, newDocument.value);
+          }
+        });
+    
+        // Function to render the table
+        function renderTable(data) {
+            console.log("Data received in renderTable:", data);
+            if (!Array.isArray(data)) {
+              console.error("Error: Expected data to be an array, but got:", data);
+              return;
+            }
+          // Create a table to display the data
+          const table = document.createElement("table");
+    
+          // Create rows dynamically from the data
+          for (let row = 0; row < 3; row++) {
             const tr = document.createElement("tr");
-
+    
             // Add "even" class for even rows and "odd" class for odd rows
             tr.classList.add(row % 2 === 0 ? "even" : "odd");
-
+    
             for (let col = 0; col < 3; col++) {
-              const cellData = result.find(
+              const cellData = data.find(
                 (item) => item.row === row && item.column === col
               );
               const td = document.createElement("td");
+              td.dataset.row = row; // Add row and column as data attributes for quick updates
+              td.dataset.col = col;
+    
               if (cellData) {
                 td.textContent = cellData.value;
                 if (cellData.value.toLowerCase() === "x") {
@@ -43,27 +125,63 @@
               }
               tr.appendChild(td);
             }
-
+    
             table.appendChild(tr);
           }
-
-
-            // Clear previous content and append the table
-            resultElement.textContent = "";
-            resultElement.appendChild(table);
-            document.getElementById("fetch").style.display = "none"
+    
+          // Clear previous content and append the table
+          resultElement.textContent = "";
+          resultElement.appendChild(table);
+          addCellClickListeners();
+        }
+    
+        // Function to update a single cell in the table
+        function updateCell(row, column, value) {
+          const cell = resultElement.querySelector(
+            `td[data-row="${row}"][data-col="${column}"]`
+          );
+          if (cell) {
+            cell.textContent = value;
+    
+            // Update classes based on the value
+            cell.classList.remove("x", "o");
+            if (value.toLowerCase() === "x") {
+              cell.classList.add("x");
+            } else if (value.toLowerCase() === "o") {
+              cell.classList.add("o");
+            }
           }
-        });
-        
+        }
       });
-      
+
+      function addCellClickListeners() {
+      document.querySelectorAll("#result td").forEach((cell) => {
+        cell.addEventListener("click", async () => {
+          const row = parseInt(cell.dataset.row);
+          const col = parseInt(cell.dataset.col);
+          if (cell.textContent != "" || parseInt(currentTurn) % 2 != 0) {
+            console.log("Illegal placement")
+          } else {
+            console.log(`📩 Sending move: row ${row}, col ${col}`);
+            await window.api.makeMove(row, col);
+          }
+         
+        });
+      });
+    }
     </script>
-  </head>
+  </head> 
   <body>
     <p class="title">TIC TAC TOE</p>
+    <p id="subtitle">Turn: </p>
     <div class="button_container">
       <button id="fetch">Join Game</button>
     </div>
     <div id="result"></div>
+    <div class="button_container">
+      <p id="gameResult"></p>
+      <button id="new-game">New Game</button>
+    </div>
+    
   </body>
 </html>

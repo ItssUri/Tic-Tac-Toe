@@ -5,7 +5,7 @@ body {
   max-width: 38rem;
   padding: 2rem;
   max-height: 100%;
-  background-color: cornflowerblue;
+  background-color: rgb(255, 147, 147);
 }
 
 @font-face {
@@ -19,15 +19,41 @@ body {
  font-family: "Cabin";
 }
 
+@keyframes rainbow {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 100%;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}
+
 .title {
   font-family: "Cabin", serif;
   text-align: center;
   color: white;
   font-size: xx-large;
+  background-image: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet, red);
+  background-size: 400%; 
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow 2s linear infinite, bounce 5s ease infinite;
 }
-
+  
 button {
-  background-color: #fff; /* Blanco */
+  background-color: #fff;
   color: #333;
   border: none;
   padding: 15px 30px;
@@ -41,7 +67,7 @@ button {
 
 button:hover {
   background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(1, 243, 243, 1);
+  box-shadow: 0 4px 8px rgb(1, 243, 21);
 }
 
 .button_container {
@@ -50,7 +76,7 @@ button:hover {
 
 table {
   margin: 5px auto;
-  width: 15rem; 
+  min-width: 15rem; 
   height: 100%; 
   border-spacing: 3px;
   text-align: center;
@@ -79,14 +105,16 @@ table tr:first-child td:last-child {
 }
 
 td {
+  width: 20px;
   color: white;
   box-shadow: #333;
   background-color: #ffffff5d;
-  
   height: 5rem;
 }
+
 td:hover { 
   background-color: #ffffff3b;
+  cursor:pointer;
 }
 
 .x {
@@ -97,4 +125,23 @@ td:hover {
 .o {
   font-weight: bold;
   color: blue;
+}
+
+#subtitle{
+  display: none;
+  font-family: 'Cabin';
+  text-align: center;
+  color: black;
+  font-size: large; 
+  font-weight: bold;
+}
+
+#new-game{
+  margin-top: 10px;
+  display: none;
+}
+
+#new-game:hover{
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgb(243, 1, 1);
 }
